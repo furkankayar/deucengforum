@@ -11,7 +11,19 @@ const cors = require("cors");
 
 module.exports = (expressApp, expressRouter)=>{
 
-  expressApp.use("/api/user", cors(), require('./userRouter')(expressRouter));
+  let authRouter = require('./authRouter')(expressRouter, expressApp);
+  let userRouter = require('./userRouter')(expressRouter);
+  expressApp.use("/authentication", cors(), authRouter);
+  expressApp.use("/user", cors(), userRouter);
+  /*expressApp.post("/api/:url", (req, res) => {
+    res
+      .status(404)
+      .json({
+        code: 404,
+        status: 'not found',
+        url: req.url
+      });
+  });*/
 
   return expressRouter;
 }
