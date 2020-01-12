@@ -3,6 +3,7 @@
 const express = require("express");
 const bodyParser = require("body-parser");
 const app = express();
+const db = require("./db/models/index");
 const router = require("./routes/index")(app, express.Router());
 
 

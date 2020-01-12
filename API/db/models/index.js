@@ -1,0 +1,59 @@
+'use strict'
+
+var Sequelize = require('sequelize');
+var sequelize = new Sequelize('deucengforum', 'furkan', '756ee75b',
+  {
+    host: 'localhost',
+    dialect: 'postgres',
+    pool:{
+      max: 5,
+      min: 0,
+      idle: 10000
+    },
+    logging: false
+  });
+
+
+var user = require('./user');
+var UserModel = user.UserModel(sequelize, Sequelize);
+var post = require('./post');
+var PostModel = post.PostModel(sequelize, Sequelize, UserModel);
+var comment = require('./comment');
+var CommentModel = comment.CommentModel(sequelize, Sequelize, PostModel);
+var userComment = require('./userComment');
+var UserCommentModel = userComment.UserCommentModel(sequelize, Sequelize, CommentModel, UserModel);
+
+
+const db = {};
+
+
+// Sync models and views
+let seq_models = [];
+let seq_views = [];
+sequelize.modelManager.forEachModel(model => {
+  if (model && model.options.sync !== false) {
+    seq_models.push(model);
+  }
+  else{
+    seq_views.push(model);
+  }
+});
+Sequelize.Promise.each(seq_models, model => {
+  return model.sync();
+});
+Sequelize.Promise.each(seq_views, view => {
+  return view.options.classMethods.createView();
+});
+
+
+
+
+db.UserModel = UserModel;
+db.PostModel = PostModel;
+db.CommentModel = CommentModel;
+db.UserCommentModel = UserCommentModel;
+
+db.Sequelize = Sequelize;
+db.sequelize = sequelize;
+
+module.exports = db;
