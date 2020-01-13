@@ -50,12 +50,8 @@ function saveAccessToken(accessToken, clientID, expires, user, callback){
     username: user.username,
     expires: expires
   }
-  console.log(expires);
-  redisClient.setex(accessToken, 3600, JSON.stringify(token)); // user.username must be user.user_id
+  redisClient.setex(accessToken, 3600, JSON.stringify(token));
   callback(null);
-  /*sessionDBHelper.saveAccessToken(accessToken, user.username, expires)
-    .then(() => callback(null))
-    .catch(error => callback(error));*/
 }
 
 function getAccessToken(bearerToken, callback){
@@ -77,18 +73,6 @@ function getAccessToken(bearerToken, callback){
       }
     }
   });
-
-  /*sessionDBHelper.getSessionFromBearerToken(bearerToken)
-    .then(session => {
-      if(session === null){
-        callback(false, bearerToken);
-      }
-      else{
-        return createAccessTokenFrom(session);
-      }
-    })
-    .then(accessToken => callback(false, accessToken))
-    .catch(error => callback(true, null));*/
 }
 
 function createAccessTokenFrom(session){
