@@ -11,11 +11,11 @@ module.exports = (injectedUserModelDBHelper, injectedRedisClient) => {
 
   return {
 
-      getClient: getClient,
-      grantTypeAllowed: grantTypeAllowed,
-      getUser: getAccount,
-      saveAccessToken: saveAccessToken,
-      getAccessToken: getAccessToken
+    getClient: getClient,
+    grantTypeAllowed: grantTypeAllowed,
+    getUser: getAccount,
+    saveAccessToken: saveAccessToken,
+    getAccessToken: getAccessToken
 
   }
 }
@@ -46,7 +46,12 @@ function getAccount(username, password, callback){
 
 function saveAccessToken(accessToken, clientID, expires, user, callback){
 
-  redisClient.setex(accessToken, expires, user.username); // user.username must be user.user_id
+  let token = {
+    username: user.username,
+    expires: expires
+  }
+  console.log(expires);
+  redisClient.setex(accessToken, 3600, JSON.stringify(token)); // user.username must be user.user_id
   callback(null);
   /*sessionDBHelper.saveAccessToken(accessToken, user.username, expires)
     .then(() => callback(null))
@@ -55,19 +60,24 @@ function saveAccessToken(accessToken, clientID, expires, user, callback){
 
 function getAccessToken(bearerToken, callback){
 
-  redisClient.get(bearerToken, (err, res) => {
+  redisClient.get(bearerToken, (err, session) => {
     if(err){
       callback(true, null);
     }
     else{
-      if(res === null){
+
+      if(session === null){
         callback(false, bearerToken);
       }
       else{
-        return createAccessTokenForm(res);
+        createAccessTokenFrom(session)
+          .then(accessToken => {
+            callback(false, accessToken);
+          });
       }
     }
   });
+
   /*sessionDBHelper.getSessionFromBearerToken(bearerToken)
     .then(session => {
       if(session === null){
@@ -83,10 +93,12 @@ function getAccessToken(bearerToken, callback){
 
 function createAccessTokenFrom(session){
 
+  let jsonSession = JSON.parse(session);
+
   return Promise.resolve({
     user:{
-      id: session.username,
+      id: jsonSession.username,
     },
-    expires: session.expires
+    expires: jsonSession.expires
   });
 }

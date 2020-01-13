@@ -7,6 +7,7 @@ function userModel(sequelize, Sequelize){
     user_id: {
       type: Sequelize.INTEGER,
       allowNull: false,
+      autoIncrement: true,
       primaryKey: true
     },
     username: {

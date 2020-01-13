@@ -23,7 +23,7 @@ app.use(bodyParser.urlencoded({
 
 app.use(bodyParser.json());
 
-const router = require("./routes/index")(app, express.Router());
+const router = require("./routes/index")(app, express.Router(), dbHelpers);
 
 app.use(app.oauth.errorHandler());
 

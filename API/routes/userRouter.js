@@ -1,6 +1,6 @@
 'use strict'
 
-module.exports = (expressRouter) => {
+module.exports = (expressRouter, userHelper) => {
 
   expressRouter.post('/', (req, res) => {
     console.log(req.body.grant_type);
@@ -12,6 +12,8 @@ module.exports = (expressRouter) => {
         status: 'user test success',
       });*/
   });
+
+  expressRouter.put('/register', userHelper.registerUser);
 
   expressRouter.post('/unauthorized', (req, res) => {
 
