@@ -4,11 +4,11 @@ module.exports = {
 
   sendResponse: sendResponse,
   isString: isString,
-  
+
 }
 
 function sendResponse(code, res, message, error){
-
+  
   res
     .status(code)
     .json({

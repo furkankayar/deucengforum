@@ -8,6 +8,7 @@ const db = require("./db/models/index");
 const dbHelpers = require("./db/helpers/index")(db);
 const redisClient = redis.createClient();
 
+
 const oAuth2Server = require('node-oauth2-server');
 const oAuthModel = require('./authentication/accessTokenModel')(dbHelpers.userHelper, redisClient);
 

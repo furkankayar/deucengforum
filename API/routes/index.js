@@ -11,7 +11,7 @@ const cors = require("cors");
 
 module.exports = (expressApp, expressRouter, dbHelpers)=>{
 
-  let authRouter = require('./authRouter')(expressRouter, expressApp);
+  let authRouter = require('./authRouter')(expressRouter, expressApp, dbHelpers.authHelper);
   let userRouter = require('./userRouter')(expressRouter, dbHelpers.userHelper);
   expressApp.use("/authentication", cors(), authRouter);
   expressApp.use("/user", cors(), userRouter);

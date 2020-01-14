@@ -6,42 +6,56 @@
       position="top"
       color="blue"
       style="z-index: 2050"
-
     >
-      <mdb-navbar-brand to="/" waves class="font-weight-bold">MDB Vue</mdb-navbar-brand>
+      <mdb-navbar-brand to="/" waves class="font-weight-bold">DEUCENG</mdb-navbar-brand>
       <mdb-navbar-toggler>
         <mdb-navbar-nav right>
           <mdb-nav-item exact to="/">
             <strong>Home</strong>
           </mdb-nav-item>
-          <mdb-nav-item @click.native="showRegisterModal = false; showLoginModal = true">
+          <mdb-nav-item v-if="loggedIn == false" @click.native="showRegisterModal = false; showLoginModal = true">
             <strong>Login</strong>
           </mdb-nav-item>
-          <mdb-nav-item @click.native="showLoginModal = false; showRegisterModal = true">
+          <mdb-nav-item v-if="loggedIn == false" @click.native="showLoginModal = false; showRegisterModal = true">
             <strong>Register</strong>
+          </mdb-nav-item>
+          <mdb-nav-item v-if="loggedIn == true">
+            <strong>Logout</strong>
           </mdb-nav-item>
         </mdb-navbar-nav>
       </mdb-navbar-toggler>
     </mdb-navbar>
     <main :style="{marginTop: '60px'}">
       <mdb-modal centered :show="showLoginModal" @close="showLoginModal = false">
-        <mdb-modal-header>
-          <mdb-modal-title>Login</mdb-modal-title>
+        <mdb-modal-header class="text-center">
+          <mdb-modal-title tag="h4" bold class="w-100">Sign in</mdb-modal-title>
         </mdb-modal-header>
-        <mdb-modal-body>...</mdb-modal-body>
-        <mdb-modal-footer>
-          <mdb-btn color="primary">Login</mdb-btn>
-          <mdb-btn color="secondary" @click.native="showLoginModal = false">Close</mdb-btn>
+        <mdb-modal-body class="mx-3 grey-text">
+          <div class="text-danger text-center">{{ this.loginFormError }}</div>
+          <form id="loginForm" class="needs-validation" novalidate @submit="checkLoginForm">
+            <mdb-input label="Your username" v-model="username" icon="user" class="mb-5"/>
+            <mdb-input label="Your password" v-model="password" icon="lock" type="password"/>
+          </form>
+        </mdb-modal-body>
+        <mdb-modal-footer center>
+          <mdb-btn form="loginForm">Login</mdb-btn>
         </mdb-modal-footer>
       </mdb-modal>
-      <mdb-modal centered :show="showRegisterModal" @close="showRegisterModal = false">
-        <mdb-modal-header>
-          <mdb-modal-title>Register</mdb-modal-title>
+        <mdb-modal centered :show="showRegisterModal" @close="showRegisterModal = false; registrationFormError = ''; registrationFormSuccess = ''">
+        <mdb-modal-header class="text-center">
+          <mdb-modal-title tag="h4" bold class="w-100">Sign up</mdb-modal-title>
         </mdb-modal-header>
-        <mdb-modal-body>...</mdb-modal-body>
-        <mdb-modal-footer>
-          <mdb-btn color="primary">Register</mdb-btn>
-          <mdb-btn color="secondary" @click.native="showRegisterModal = false">Close</mdb-btn>
+        <mdb-modal-body class="mx-3 grey-text">
+          <div class="text-danger text-center">{{ this.registrationFormError }}</div>
+          <div class="text-success text-center">{{ this.registrationFormSuccess }}</div>
+          <form id="registerForm" class="needs-validation" novalidate @submit="checkRegisterForm">
+            <mdb-input minLength="3" label="Your username" v-model="username" icon="user" class="mb-5"/>
+            <mdb-input label="Your email" v-model="email" icon="envelope" type="email" class="mb-5"/>
+            <mdb-input label="Your password" v-model="password" icon="lock" type="password"/>
+          </form>
+        </mdb-modal-body>
+        <mdb-modal-footer center>
+          <mdb-btn form="registerForm" color="deep-orange">Sign Up</mdb-btn>
         </mdb-modal-footer>
       </mdb-modal>
       <transition name="fade" mode="out-in">
@@ -73,7 +87,10 @@ import {
   mdbModalBody,
   mdbModalFooter,
   mdbBtn,
+  mdbInput
 } from "mdbvue"
+
+import api from "./api"
 
 export default {
   name: "app",
@@ -81,7 +98,21 @@ export default {
     return {
       showLoginModal: false,
       showRegisterModal: false,
+      loggedIn: false,
+      username: '',
+      email: '',
+      password: '',
+      registrationFormError: '',
+      registrationFormSuccess: '',
+      loginFormError: '',
+      re: /^[a-zA-Z0-9]+([a-zA-Z0-9](_|-| )[a-zA-Z0-9])*[a-zA-Z0-9]*$/,
+      mailRe: /^\S+\.\S+@ceng.deu.edu.tr\b$/,
+      passRe: /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d$@$!%*#?&]{6,50}$/,
+
     };
+  },
+  mounted () {
+    console.log('check connection');
   },
   components: {
     mdbNavbar,
@@ -95,7 +126,86 @@ export default {
     mdbModalTitle,
     mdbModalBody,
     mdbModalFooter,
-    mdbBtn
+    mdbBtn,
+    mdbInput
+  },
+  methods: {
+    checkLoginForm () {
+      if (this.username.length < 6 || this.username.length > 15 || this.password.length < 6 || this.password.length > 50) {
+        this.loginFormError = 'Invalid username or password!'
+      }
+
+      
+    },
+    checkRegisterForm () {
+      if (this.username.length < 6 || this.username.length > 15) {
+        this.registrationFormError = 'Username should be between 6-15 characters!'
+        return
+      }
+      else if (!this.re.test(this.username)) {
+        this.registrationFormError = 'Username contains invalid characters!'
+        return
+      }
+
+      api.check_username({
+        username: this.username
+      })
+        .then(res => {
+          if (res.data.error === true) {
+            this.registrationFormError = 'Username is already in use!'
+          }
+          else {
+            if (!this.mailRe.test(this.email) || this.email.length >= 100) {
+              this.registrationFormError = 'Email pattern should be name.surname@ceng.deu.edu.tr!'
+              return
+            }
+
+            api.check_email({
+              email: this.email
+            })
+              .then(res => {
+                if (res.data.error === true) {
+                  this.registrationFormError = 'Email address is already registered!'
+                }
+                else {
+                  if (!this.passRe.test(this.password)) {
+                    this.registrationFormError = 'Password should minimum 6 characters, at least one letter and one number!'
+                    return
+                  }
+                  api.register({
+                    username: this.username,
+                    email: this.email,
+                    password: this.password
+                  })
+                    .then(res => {
+                      if (res.data.error === false) {
+                        this.username = ''
+                        this.email = ''
+                        this.password = ''
+                        this.registrationFormError = ''
+                        this.registrationFormSuccess = 'Registration successful!'
+                      }
+                    })
+                    .catch(err => {
+                      if (err) {
+                        this.registrationFormError = 'Registration failed!'
+                      }
+                    })
+                }
+              })
+              .catch(err => {
+                if (err) {
+                  this.registrationFormError = 'Registration failed!'
+                }
+              })
+          }
+        })
+        .catch(err => {
+          if (err) {
+            this.registrationFormError = 'Registration failed!'
+          }
+        })
+    }
   }
 };
 </script>

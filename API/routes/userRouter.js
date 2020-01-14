@@ -14,6 +14,8 @@ module.exports = (expressRouter, userHelper) => {
   });
 
   expressRouter.put('/register', userHelper.registerUser);
+  expressRouter.post('/check_email', userHelper.checkEmailUniqueness);
+  expressRouter.post('/check_username', userHelper.checkUsernameUniqueness);
 
   expressRouter.post('/unauthorized', (req, res) => {
 

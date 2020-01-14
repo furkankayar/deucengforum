@@ -12,6 +12,8 @@ module.exports = (injectedUserModel, injectedBcrypt) => {
   return {
     getUserFromCredentials: getUserFromCredentials,
     registerUser: registerUser,
+    checkEmailUniqueness: checkEmailUniqueness,
+    checkUsernameUniqueness: checkUsernameUniqueness,
   };
 };
 
@@ -29,6 +31,61 @@ async function getUserFromCredentials(username, password){
   }
 
   return null;
+}
+
+async function checkUsernameUniqueness(req, res){
+
+  let username = req.body.username;
+  let user;
+
+  if(!utility.isString(username) || username === ''){
+    utility.sendResponse(400, res, "missing username", true);
+  }
+
+  try{
+    user = await userModel.findOne({
+      where: {
+        username: username
+      }
+    });
+  }
+  catch(err){
+    return utility.sendResponse(500, res, "database error", true);
+  }
+
+  if(user){
+    return utility.sendResponse(200, res, "username exists", true);
+  }
+
+  return utility.sendResponse(200, res, "username does not exist", false);
+}
+
+async function checkEmailUniqueness(req, res){
+
+  let email = req.body.email;
+  let user;
+
+
+  if(!utility.isString(email) || email === ''){
+    utility.sendResponse(400, res, "missing email", true);
+  }
+
+  try{
+    user = await userModel.findOne({
+      where: {
+        email: email
+      }
+    });
+  }
+  catch(err){
+    return utility.sendResponse(500, res, "database error", true);
+  }
+
+  if (user) {
+    return utility.sendResponse(200, res, "email exists", true);
+  }
+
+  return utility.sendResponse(200, res, "email does not exist", false);
 }
 
 async function registerUser(req, res){
@@ -50,7 +107,7 @@ async function registerUser(req, res){
     });
   }
   catch(err){
-    return utility.sendResponse(500, res, err, true);
+    return utility.sendResponse(500, res, "database error", true);
   }
 
   return utility.sendResponse(201, res, "registration successful", false);
