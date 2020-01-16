@@ -23,9 +23,7 @@ module.exports = (expressRouter, expressApp, authHelper) => {
     });
   });
 
-  expressRouter.post('/test', expressApp.oauth.authorise(), (req, res) => {
-    res.send('Success');
-  });
+  expressRouter.post('/check_authentication', expressApp.oauth.authorise(), authHelper.checkAuthentication);
 
   return expressRouter;
 }

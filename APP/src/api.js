@@ -32,5 +32,8 @@ export default {
   },
   check_username (data) {
     return this.execute('post', '/user/check_username', data)
+  },
+  check_authentication (data) {
+    return this.execute('post', '/authentication/check_authentication', data)
   }
 }

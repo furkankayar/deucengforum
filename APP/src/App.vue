@@ -19,14 +19,14 @@
           <mdb-nav-item v-if="loggedIn == false" @click.native="showLoginModal = false; showRegisterModal = true">
             <strong>Register</strong>
           </mdb-nav-item>
-          <mdb-nav-item v-if="loggedIn == true">
+          <mdb-nav-item v-if="loggedIn == true" @click.native="logout()">
             <strong>Logout</strong>
           </mdb-nav-item>
         </mdb-navbar-nav>
       </mdb-navbar-toggler>
     </mdb-navbar>
     <main :style="{marginTop: '60px'}">
-      <mdb-modal centered :show="showLoginModal" @close="showLoginModal = false">
+      <mdb-modal centered :show="showLoginModal" @close="showLoginModal = false; loginFormError = ''">
         <mdb-modal-header class="text-center">
           <mdb-modal-title tag="h4" bold class="w-100">Sign in</mdb-modal-title>
         </mdb-modal-header>
@@ -91,6 +91,7 @@ import {
 } from "mdbvue"
 
 import api from "./api"
+import VueCookie from "vue-cookie"
 
 export default {
   name: "app",
@@ -112,7 +113,25 @@ export default {
     };
   },
   mounted () {
-    console.log('check connection');
+    this.$root.$on('loginRequest', () => {
+      this.showLoginModal = true
+    })
+
+    api.check_authentication({
+    })
+      .then(res => {
+        if (res.data.error === false){
+          this.loggedIn = true
+        }
+        else {
+          this.loggedIn = false
+        }
+      })
+      .catch(err => {
+        if (err) {
+          this.loggedIn = false
+        }
+      })
   },
   components: {
     mdbNavbar,
@@ -133,9 +152,35 @@ export default {
     checkLoginForm () {
       if (this.username.length < 6 || this.username.length > 15 || this.password.length < 6 || this.password.length > 50) {
         this.loginFormError = 'Invalid username or password!'
+        return
       }
 
-      
+      api.login({
+        username: this.username,
+        password: this.password
+      })
+        .then(res => {
+          if(res.data.error === true && res.data.body === 'not_active'){
+            this.loginFormError = 'Activation email sent, please activate your account.'
+          }
+          else {
+            this.loggedIn = true
+            this.loginFormError = ''
+            this.registrationFormError = ''
+            this.registrationFormSuccess = ''
+            this.showLoginModal = false
+            this.showRegisterModal = false
+            this.username = ''
+            this.password = ''
+            this.email = ''
+            VueCookie.set('access_token', res.data.access_token, 1)
+          }
+        })
+        .catch(err => {
+          if (err) {
+            this.loginFormError = 'Invalid username or password!'
+          }
+        })
     },
     checkRegisterForm () {
       if (this.username.length < 6 || this.username.length > 15) {
@@ -205,6 +250,10 @@ export default {
             this.registrationFormError = 'Registration failed!'
           }
         })
+    },
+    logout () {
+      VueCookie.delete('access_token')
+      window.location.reload()
     }
   }
 };

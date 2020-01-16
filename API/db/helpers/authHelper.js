@@ -11,6 +11,7 @@ module.exports = (injectedUserModel, injectedBcrypt) => {
 
   return {
     login: login,
+    checkAuthentication: checkAuthentication,
   };
 }
 
@@ -32,4 +33,9 @@ function login(username, password, callback){
     .catch(err => {
       callback(true);
     });
+}
+
+function checkAuthentication(req, res){
+
+  return utility.sendResponse(200 ,res, "success", false);
 }

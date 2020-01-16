@@ -39,7 +39,7 @@ async function checkUsernameUniqueness(req, res){
   let user;
 
   if(!utility.isString(username) || username === ''){
-    utility.sendResponse(400, res, "missing username", true);
+    return utility.sendResponse(400, res, "missing username", true);
   }
 
   try{
@@ -67,7 +67,7 @@ async function checkEmailUniqueness(req, res){
 
 
   if(!utility.isString(email) || email === ''){
-    utility.sendResponse(400, res, "missing email", true);
+    return utility.sendResponse(400, res, "missing email", true);
   }
 
   try{
@@ -95,7 +95,7 @@ async function registerUser(req, res){
   let email = req.body.email;
 
   if(!utility.isString(username) || !utility.isString(password) || !utility.isString(email)){
-    utility.sendResponse(400, res, "missing credentials", true);
+    return utility.sendResponse(400, res, "missing credentials", true);
   }
 
   try{
