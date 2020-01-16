@@ -13,8 +13,10 @@ module.exports = (expressApp, expressRouter, dbHelpers)=>{
 
   let authRouter = require('./authRouter')(expressRouter, expressApp, dbHelpers.authHelper);
   let userRouter = require('./userRouter')(expressRouter, dbHelpers.userHelper);
+  let postRouter = require('./postRouter')(expressRouter, expressApp, dbHelpers.postHelper);
   expressApp.use("/authentication", cors(), authRouter);
   expressApp.use("/user", cors(), userRouter);
+  expressApp.use("/post", cors(), postRouter);
   /*expressApp.post("/api/:url", (req, res) => {
     res
       .status(404)

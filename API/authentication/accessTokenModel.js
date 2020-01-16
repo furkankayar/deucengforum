@@ -48,6 +48,7 @@ function saveAccessToken(accessToken, clientID, expires, user, callback){
 
   let token = {
     username: user.username,
+    user_id: user.user_id,
     expires: expires
   }
   redisClient.setex(accessToken, 3600, JSON.stringify(token));

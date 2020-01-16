@@ -7,13 +7,18 @@ function postModel(sequelize, Sequelize, user){
     post_id: {
       type: Sequelize.INTEGER,
       allowNull: false,
+      autoIncrement: true,
       primaryKey: true
     },
     user_id: {
       type: Sequelize.INTEGER,
       allowNull: false,
     },
-    body: {
+    topic: {
+      type: Sequelize.STRING(100),
+      allowNull: false,
+    },
+    content: {
       type: Sequelize.STRING(500),
       allowNull: false,
     },

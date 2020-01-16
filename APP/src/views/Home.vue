@@ -1,5 +1,21 @@
 <template>
   <div class="home">
+      <mdb-modal centered :show="showPostModal" @close="showPostModal = false; postFormError = ''; postFormSuccess = ''">
+        <mdb-modal-header class="text-center">
+          <mdb-modal-title tag="h4" bold class="w-100">New Post</mdb-modal-title>
+        </mdb-modal-header>
+      <mdb-modal-body class="mx-3 grey-text">
+        <div class="text-danger text-center">{{ this.postFormError }}</div>
+        <div class="text-success text-center">{{ this.postFormSuccess }}</div>
+        <form id="postForm" class="needs-validation" novalidate @submit="checkPostForm">
+          <mdb-input v-model="topic" label="Topic" type="text"></mdb-input>
+          <mdb-input v-model="content" label="Content" type="textarea" :rows="7"></mdb-input>
+        </form>
+      </mdb-modal-body>
+      <mdb-modal-footer center>
+        <mdb-btn form="postForm" gradient="aqua">Send Post</mdb-btn>
+      </mdb-modal-footer>
+    </mdb-modal>
     <div class="container-fluid">
     <div class="row">
       <div class="col-md-3"/>
@@ -52,8 +68,20 @@
 // @ is an alias to /src
 // import HelloWorld from '@/components/HelloWorld.vue'
 // import NavbarPage from '@/components/NavbarPage.vue'
-import { mdbTbl, mdbTblHead, mdbTblBody, mdbBtn} from 'mdbvue';
+import {
+  mdbTbl,
+  mdbTblHead,
+  mdbTblBody,
+  mdbBtn,
+  mdbInput,
+  mdbModal,
+  mdbModalHeader,
+  mdbModalTitle,
+  mdbModalBody,
+  mdbModalFooter
+} from 'mdbvue';
 import JwPagination from 'jw-vue-pagination';
+import api from '../api';
 
 export default {
   name: 'home',
@@ -62,7 +90,13 @@ export default {
     mdbTblHead,
     mdbTblBody,
     JwPagination,
-    mdbBtn
+    mdbBtn,
+    mdbInput,
+    mdbModal,
+    mdbModalHeader,
+    mdbModalTitle,
+    mdbModalBody,
+    mdbModalFooter
   },
   data () {
     return {
@@ -75,7 +109,12 @@ export default {
         { topic: 'test', author: 'furkan', published: 'dün', view: 0, answer: 0, vote: 0},
         { topic: 'test', author: 'furkan', published: 'dün', view: 0, answer: 0, vote: 0},
       ],
-      pageItems: []
+      pageItems: [],
+      content: '',
+      topic: '',
+      showPostModal: false,
+      postFormError: '',
+      postFormSuccess: ''
     }
   },
   methods: {
@@ -83,7 +122,45 @@ export default {
       this.pageItems = pageItems
     },
     createNewTopic () {
-      this.$root.$emit('loginRequest')
+      api.check_authentication({
+      })
+        .then(res => {
+          if (res.data.error === false && res.data.body === "success") {
+            this.showPostModal = true
+          }
+        })
+        .catch(err => {
+          if (err) {
+            this.$root.$emit('loginRequest')
+          }
+        })
+    },
+    checkPostForm () {
+      this.topic = this.topic.trim()
+      this.content = this.content.trim()
+
+      if(this.topic.length === 0 || this.content.length === 0) {
+        this.postFormError = 'Empty topic and content are not allowed!'
+        return
+      }
+
+      api.new_post({
+        topic: this.topic,
+        content: this.content
+      })
+        .then(res => {
+          if (res.data.error === false) {
+            this.postFormSuccess = 'Successful'
+            this.postFormError = ''
+            this.topic = ''
+            this.content = ''
+          }
+        })
+        .catch(err => {
+          if (err) {
+            this.postFormError = 'An error occured, try again.'
+          }
+        })
     }
   }
 }

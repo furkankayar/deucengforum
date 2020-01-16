@@ -7,6 +7,7 @@ function commentModel(sequelize, Sequelize, post){
     comment_id: {
       type: Sequelize.INTEGER,
       allowNull: false,
+      autoIncrement: true,
       primaryKey: true
     },
     post_id: {

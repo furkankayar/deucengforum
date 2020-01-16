@@ -5,8 +5,9 @@ const bodyParser = require("body-parser");
 const redis = require("redis");
 const app = express();
 const db = require("./db/models/index");
-const dbHelpers = require("./db/helpers/index")(db);
 const redisClient = redis.createClient();
+const dbHelpers = require("./db/helpers/index")(db, redisClient);
+
 
 
 const oAuth2Server = require('node-oauth2-server');

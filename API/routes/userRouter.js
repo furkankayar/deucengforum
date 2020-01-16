@@ -2,30 +2,11 @@
 
 module.exports = (expressRouter, userHelper) => {
 
-  expressRouter.post('/', (req, res) => {
-    console.log(req.body.grant_type);
-    res.redirect(307, '/user/unauthorized');
-    /*res
-      .status(200)
-      .json({
-        code: 200,
-        status: 'user test success',
-      });*/
-  });
 
   expressRouter.put('/register', userHelper.registerUser);
   expressRouter.post('/check_email', userHelper.checkEmailUniqueness);
   expressRouter.post('/check_username', userHelper.checkUsernameUniqueness);
 
-  expressRouter.post('/unauthorized', (req, res) => {
-
-    res.
-      status(401)
-      .json({
-        code: 401,
-        status: 'unauthorized',
-      });
-  });
 
   expressRouter.post('/:url', (req, res) => {
 

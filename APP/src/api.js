@@ -35,5 +35,8 @@ export default {
   },
   check_authentication (data) {
     return this.execute('post', '/authentication/check_authentication', data)
+  },
+  new_post (data) {
+    return this.execute('put', '/post/new_post', data)
   }
 }
