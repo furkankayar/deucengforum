@@ -8,7 +8,7 @@ module.exports = (expressRouter, userHelper) => {
   expressRouter.post('/check_username', userHelper.checkUsernameUniqueness);
 
 
-  expressRouter.post('/:url', (req, res) => {
+/*  expressRouter.post('/:url', (req, res) => {
 
     res
       .status(404)
@@ -17,7 +17,8 @@ module.exports = (expressRouter, userHelper) => {
         status: 'not found',
         bad_request: req.url
       })
-  });
+  });*/
+  // IF UNCOMMENT IT CATCH REQUESTS COMES TO /post etc.
 
   return expressRouter;
 };

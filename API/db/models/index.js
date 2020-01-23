@@ -24,6 +24,11 @@ var userComment = require('./userComment');
 var UserCommentModel = userComment.UserCommentModel(sequelize, Sequelize, CommentModel, UserModel);
 var vote = require('./vote');
 var VoteModel = vote.VoteModel(sequelize, Sequelize, PostModel, UserModel);
+var view = require('./view');
+var ViewModel = view.ViewModel(sequelize, Sequelize, PostModel, UserModel);
+
+var postMenu = require('./views/postMenu');
+var PostMenuView = postMenu.PostMenuView(sequelize,Sequelize);
 
 
 const db = {};
@@ -55,6 +60,9 @@ db.PostModel = PostModel;
 db.CommentModel = CommentModel;
 db.UserCommentModel = UserCommentModel;
 db.VoteModel = VoteModel;
+db.ViewModel = ViewModel;
+
+db.PostMenuView = PostMenuView;
 
 db.Sequelize = Sequelize;
 db.sequelize = sequelize;

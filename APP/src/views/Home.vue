@@ -7,13 +7,13 @@
       <mdb-modal-body class="mx-3 grey-text">
         <div class="text-danger text-center">{{ this.postFormError }}</div>
         <div class="text-success text-center">{{ this.postFormSuccess }}</div>
-        <form id="postForm" class="needs-validation" novalidate @submit="checkPostForm">
+        <form id="postForm" class="needs-validation" novalidate>
           <mdb-input v-model="topic" label="Topic" type="text"></mdb-input>
           <mdb-input v-model="content" label="Content" type="textarea" :rows="7"></mdb-input>
         </form>
       </mdb-modal-body>
       <mdb-modal-footer center>
-        <mdb-btn form="postForm" gradient="aqua">Send Post</mdb-btn>
+        <mdb-btn @click.native="checkPostForm" gradient="aqua">Send Post</mdb-btn>
       </mdb-modal-footer>
     </mdb-modal>
     <div class="container-fluid">
@@ -40,10 +40,10 @@
               <mdb-tbl-body>
                 <tr v-for="(item, index) in pageItems" v-bind:key="index">
                   <td class="text-left">
-                    <a href="https://mdbootstrap.com/support/jquery/webpack-error-cant-resolve-chart-js/" class="font-weight-bold blue-text">{{ item.topic }}</a>
+                    <a :href="'/post/' + item.post_id" class="font-weight-bold blue-text">{{ item.topic }}</a>
                     <div>
                       <strong>{{ item.author }}</strong>
-                      <span>{{ item.published }}</span>
+                      <span>{{ printDate(item) }}</span>
                     </div>
                   </td>
                   <td>{{ item.view }}</td>
@@ -101,13 +101,6 @@ export default {
   data () {
     return {
       items: [
-        { topic: 'jdhgfjdhjghfdkjghsjkgfshdkgjfhskfhgskjdhgkshdkgjfshdgksdhgfkd', author: 'furkan', published: 'dün', view: 0, answer: 0, vote: 0},
-        { topic: 'test', author: 'furkan', published: 'dün', view: 0, answer: 0, vote: 0},
-        { topic: 'test', author: 'furkan', published: 'dün', view: 0, answer: 0, vote: 0},
-        { topic: 'test', author: 'furkan', published: 'dün', view: 0, answer: 0, vote: 0},
-        { topic: 'test', author: 'furkan', published: 'dün', view: 0, answer: 0, vote: 0},
-        { topic: 'test', author: 'furkan', published: 'dün', view: 0, answer: 0, vote: 0},
-        { topic: 'test', author: 'furkan', published: 'dün', view: 0, answer: 0, vote: 0},
       ],
       pageItems: [],
       content: '',
@@ -116,6 +109,17 @@ export default {
       postFormError: '',
       postFormSuccess: ''
     }
+  },
+  mounted () {
+    api.get_posts({})
+      .then(res => {
+        if (res.data.error === false) {
+          this.items = res.data.body
+        }
+      })
+      .catch(err => {
+        console.log(err)
+      })
   },
   methods: {
     onChangePage (pageItems) {
@@ -161,6 +165,20 @@ export default {
             this.postFormError = 'An error occured, try again.'
           }
         })
+    },
+    printDate (item) {
+      if (item.published_days_ago !== 0) {
+        return item.published_days_ago + ' day' + (item.published_days_ago > 1 ? 's' : '') + ' ago'
+      }
+      else if (item.published_hours_ago !== 0) {
+        return item.published_hours_ago + ' hour' + (item.published_hours_ago > 1 ? 's' : '') + ' ago'
+      }
+      else if (item.published_minutes_ago !== 0) {
+        return item.published_minutes_ago + ' minute' + (item.published_minutes_ago > 1 ? 's' : '') + ' ago'
+      }
+      else if (item.published_seconds_ago !== 0) {
+        return item.published_seconds_ago + ' second' + (item.published_seconds_ago > 1 ? 's' : '') + ' ago'
+      }
     }
   }
 }

@@ -1,5 +1,5 @@
 <template>
-  <div class="home">
+  <div class="container">
     <div class="row">
       <div class="col-md-2"/>
       <div class="col-md-8">
@@ -23,20 +23,23 @@
           </div>
           <!--Card content-->
           <div class="card-body">
-            Does mdboostrap support or supply any forum template like this support forum?                                                                    <hr>
+            Does mdboostrap support or supply any forum template like this support forum?
+            <hr>
             <!-- Comments -->
             <div class="comment-card ml-5">                                                                                                                                                                                                  <!-- Single comment -->
               <small class="comment-item text-muted">
                 <p class="mb-2">
-                <strong><a href="https://mdbootstrap.com/profile/?id=72880" target="_blank">myusername</a></strong>
-                commented 5 months ago                                                                                                    </p>
+                  <strong><a href="https://mdbootstrap.com/profile/?id=72880" target="_blank">myusername</a></strong>
+                  commented 5 months ago
+                </p>
                 <p>My test comment is here </p>
               </small>
               <hr>
               <small class="comment-item text-muted">
                 <p class="mb-2">
-                <strong><a href="https://mdbootstrap.com/profile/?id=83707" target="_blank">Anderson Eichler</a></strong>
-                commented 2 months ago                                                                                                    </p>
+                  <strong><a href="https://mdbootstrap.com/profile/?id=83707" target="_blank">Anderson Eichler</a></strong>
+                  commented 2 months ago
+                </p>
                 <p>sdasdadsaaaaaaaaaaaa</p>
               </small>
               <div>

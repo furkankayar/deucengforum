@@ -38,5 +38,8 @@ export default {
   },
   new_post (data) {
     return this.execute('put', '/post/new_post', data)
+  },
+  get_posts (data) {
+    return this.execute('post', '/post/get_posts', data)
   }
 }

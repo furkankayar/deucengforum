@@ -2,15 +2,18 @@
 
 const utility = require('../../utility');
 let postModel;
+let postMenuView;
 let redisClient;
 
-module.exports = (injectedPostModel, injectedRedisClient) => {
+module.exports = (injectedPostModel, injectedPostMenuView, injectedRedisClient) => {
 
   postModel = injectedPostModel;
+  postMenuView = injectedPostMenuView;
   redisClient = injectedRedisClient;
 
   return {
     createNewPost: createNewPost,
+    getPosts: getPosts,
   }
 }
 
@@ -43,11 +46,32 @@ function createNewPost(req, res){
         if(ans){
           return utility.sendResponse(200, res, "post created", false);
         }
+        return utility.sendResponse(500, res, "error", true);
       })
       .catch(err => {
         if(err){
           return utility.sendResponse(500, res, "database error", true);
         }
+        return utility.sendResponse(500, "error", true);
       });
   });
+}
+
+function getPosts(req, res){
+
+  postMenuView.findAll({
+    raw:true
+  })
+    .then(result => {
+      if(result){
+        return utility.sendResponse(200, res, result, false);
+      }
+      return utility.sendResponse(500, res, "error", true);
+    })
+    .catch(err => {
+      if(err){
+        return utility.sendResponse(500, "database error", true);
+      }
+      return utility.sendResponse(500, "error", true);
+    })
 }

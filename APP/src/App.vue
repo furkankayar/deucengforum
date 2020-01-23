@@ -32,13 +32,13 @@
         </mdb-modal-header>
         <mdb-modal-body class="mx-3 grey-text">
           <div class="text-danger text-center">{{ this.loginFormError }}</div>
-          <form id="loginForm" class="needs-validation" novalidate @submit="checkLoginForm">
+          <form id="loginForm" class="needs-validation" novalidate>
             <mdb-input label="Your username" v-model="username" icon="user" class="mb-5"/>
             <mdb-input label="Your password" v-model="password" icon="lock" type="password"/>
           </form>
         </mdb-modal-body>
         <mdb-modal-footer center>
-          <mdb-btn form="loginForm">Login</mdb-btn>
+          <mdb-btn @click.native="checkLoginForm">Login</mdb-btn>
         </mdb-modal-footer>
       </mdb-modal>
         <mdb-modal centered :show="showRegisterModal" @close="showRegisterModal = false; registrationFormError = ''; registrationFormSuccess = ''">
@@ -48,14 +48,14 @@
         <mdb-modal-body class="mx-3 grey-text">
           <div class="text-danger text-center">{{ this.registrationFormError }}</div>
           <div class="text-success text-center">{{ this.registrationFormSuccess }}</div>
-          <form id="registerForm" class="needs-validation" novalidate @submit="checkRegisterForm">
+          <form id="registerForm" class="needs-validation" novalidate>
             <mdb-input minLength="3" label="Your username" v-model="username" icon="user" class="mb-5"/>
             <mdb-input label="Your email" v-model="email" icon="envelope" type="email" class="mb-5"/>
             <mdb-input label="Your password" v-model="password" icon="lock" type="password"/>
           </form>
         </mdb-modal-body>
         <mdb-modal-footer center>
-          <mdb-btn form="registerForm" color="deep-orange">Sign Up</mdb-btn>
+          <mdb-btn @click.native="checkRegisterForm" color="deep-orange">Sign Up</mdb-btn>
         </mdb-modal-footer>
       </mdb-modal>
       <transition name="fade" mode="out-in">
