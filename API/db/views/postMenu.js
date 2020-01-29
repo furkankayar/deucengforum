@@ -1,3 +1,5 @@
+'use strict'
+
 const postMenu = {};
 
 function postMenuView(sequelize, Sequelize){

@@ -174,6 +174,7 @@ export default {
             this.password = ''
             this.email = ''
             VueCookie.set('access_token', res.data.access_token, 1)
+            this.$router.go(0)
           }
         })
         .catch(err => {
@@ -253,7 +254,7 @@ export default {
     },
     logout () {
       VueCookie.delete('access_token')
-      window.location.reload()
+      this.$router.go(0)
     }
   }
 };

@@ -41,5 +41,11 @@ export default {
   },
   get_posts (data) {
     return this.execute('post', '/post/get_posts', data)
+  },
+  get_post (data) {
+    return this.execute('post', '/post/get_post', data)
+  },
+  get_comments_of_post (data) {
+    return this.execute('post', '/post/get_comments_of_post', data)
   }
 }

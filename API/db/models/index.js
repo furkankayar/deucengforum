@@ -27,9 +27,11 @@ var VoteModel = vote.VoteModel(sequelize, Sequelize, PostModel, UserModel);
 var view = require('./view');
 var ViewModel = view.ViewModel(sequelize, Sequelize, PostModel, UserModel);
 
-var postMenu = require('./views/postMenu');
+var postMenu = require('../views/postMenu');
 var PostMenuView = postMenu.PostMenuView(sequelize,Sequelize);
 
+require('../functions/getPost')(sequelize);
+require('../functions/getCommentsOfPost')(sequelize);
 
 const db = {};
 

@@ -30,9 +30,8 @@
               <mdb-tbl-head>
                 <tr>
                   <th class="text-left">Topic</th>
-                  <th>Views</th>
-                  <th>Answers</th>
-                  <th>Votes</th>
+                  <th class="text-center">Views</th>
+                  <th class="text-center">Answers</th>
                 </tr>
               </mdb-tbl-head>
               <!--Table head-->
@@ -46,9 +45,8 @@
                       <span>{{ printDate(item) }}</span>
                     </div>
                   </td>
-                  <td>{{ item.view }}</td>
-                  <td>{{ item.answer }}</td>
-                  <td>{{ item.vote }}</td>
+                  <td class="text-center">{{ item.view }}</td>
+                  <td class="text-center">{{ item.answer }}</td>
                 </tr>
               </mdb-tbl-body>
               <!--Table body-->

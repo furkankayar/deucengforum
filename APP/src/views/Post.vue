@@ -7,41 +7,36 @@
           <div class="card-header forum-card-img-30 d-flex justify-content-between">
             <p class="pt-2 mb-0">
               <img src="https://secure.gravatar.com/avatar/62c9c125499e280d7f96a75e939f3046?s=96&amp;d=mm&amp;r=g" alt="" class="rounded-circle mr-2">
-              <strong><a href="https://mdbootstrap.com/profile/?id=35406" target="_blank">fredemagi</a></strong>
-              asked 2 years ago
+              <strong><a :href="this.user_id !== '' ? '/user/' + this.user_id : '#'">{{ this.username }}</a></strong>
+              {{ printDate(this.date) }}
             </p>
             <div>
               <a href="#" type="button" class="btn btn-outline-dark-green btn-sm px-2 waves-effect show_login">
-                <span class="value">1</span>
+                <span class="value">{{ this.positive_vote }}</span>
                 <i class="far fa-thumbs-up ml-1"></i>
               </a>
               <a href="#" type="button" class="btn btn-outline-danger btn-sm px-2 waves-effect show_login">
-                <span class="value">0</span>
+                <span class="value">{{ this.negative_vote }}</span>
                 <i class="far fa-thumbs-down ml-1"></i>
               </a>
             </div>
           </div>
           <!--Card content-->
           <div class="card-body">
-            Does mdboostrap support or supply any forum template like this support forum?
+            {{ this.content }}
             <hr>
             <!-- Comments -->
             <div class="comment-card ml-5">                                                                                                                                                                                                  <!-- Single comment -->
-              <small class="comment-item text-muted">
+              <small v-for="(comment, i) in comments" v-bind:key="i" class="comment-item text-muted">
                 <p class="mb-2">
-                  <strong><a href="https://mdbootstrap.com/profile/?id=72880" target="_blank">myusername</a></strong>
-                  commented 5 months ago
+                  <strong><a :href="comment.user_id ? '/user/' + comment.user_id : '#'">{{ comment.username ? comment.username : 'Anonymous' }}</a></strong>
+                  {{ printDate(comment)}}
                 </p>
-                <p>My test comment is here </p>
+                <p>{{ comment.content }}</p>
+                <hr>
               </small>
-              <hr>
-              <small class="comment-item text-muted">
-                <p class="mb-2">
-                  <strong><a href="https://mdbootstrap.com/profile/?id=83707" target="_blank">Anderson Eichler</a></strong>
-                  commented 2 months ago
-                </p>
-                <p>sdasdadsaaaaaaaaaaaa</p>
-              </small>
+
+
               <div>
                 <form class="px-1 mt-4">
 
@@ -52,8 +47,8 @@
                 </div>
 
                 <div class="text-center mt-4">
-                  <mdb-btn color="primary" size="md">Post</mdb-btn>
-                  <mdb-btn color="secondary" size="md">Post Anonymous</mdb-btn>
+                  <mdb-btn v-if="isAuthenticated" color="primary" size="md">Comment</mdb-btn>
+                  <mdb-btn color="secondary" size="md">Comment Anonymous</mdb-btn>
                 </div>
 
                 </form>
@@ -92,11 +87,93 @@
 // import HelloWorld from '@/components/HelloWorld.vue'
 // import NavbarPage from '@/components/NavbarPage.vue'
 import { mdbBtn } from 'mdbvue';
+import api from '../api';
 
 export default {
   name: 'post',
   components: {
     mdbBtn,
+  },
+  data () {
+    return {
+      isAuthenticated: false,
+      user_id: '',
+      username: '',
+      content: '',
+      date: {},
+      positive_vote: '',
+      negative_vote: '',
+      comments: []
+    }
+  },
+  mounted () {
+    let data
+    let id = this.$route.params.id
+    if (this.$route.params.data !== undefined || this.$route.params.data !== null) {
+      data = this.$route.params.data
+    }
+    this.user_id = data.user_id ? data.user_id : ''
+    this.username = data.username ? data.username : ''
+    this.content = data.content ? data.content : ''
+    this.date.published_days_ago = data.published_days_ago ? data.published_days_ago : 0
+    this.date.published_hours_ago = data.published_hours_ago ? data.published_hours_ago : 0
+    this.date.published_minutes_ago = data.published_minutes_ago ? data.published_minutes_ago : 0
+    this.date.published_seconds_ago = data.published_seconds_ago ? data.published_seconds_ago : 0
+    this.positive_vote = data.positive_vote ? data.positive_vote : ''
+    this.negative_vote = data.negative_vote ? data.negative_vote : ''
+
+    if (id !== undefined || id !== null) {
+
+      api.get_comments_of_post({
+        postId: id
+      })
+        .then(res => {
+          if (res.data.code === 200 && res.data.error === false) {
+            this.comments = res.data.body
+          }
+          else {
+            this.comments = []
+          }
+        })
+        .catch(err => {
+          if (err) {
+            this.comments = []
+          }
+        })
+    }
+
+    api.check_authentication({
+    })
+      .then(res => {
+        if (res.data.error === false){
+          this.isAuthenticated = true
+        }
+        else {
+          this.isAuthenticated = false
+        }
+      })
+      .catch(err => {
+        if (err) {
+          this.isAuthenticated = false
+        }
+      })
+
+  },
+  methods: {
+    printDate (item) {
+      if (item.published_days_ago !== 0) {
+        return item.published_days_ago + ' day' + (item.published_days_ago > 1 ? 's' : '') + ' ago'
+      }
+      else if (item.published_hours_ago !== 0) {
+        return item.published_hours_ago + ' hour' + (item.published_hours_ago > 1 ? 's' : '') + ' ago'
+      }
+      else if (item.published_minutes_ago !== 0) {
+        return item.published_minutes_ago + ' minute' + (item.published_minutes_ago > 1 ? 's' : '') + ' ago'
+      }
+      else if (item.published_seconds_ago !== 0) {
+        return item.published_seconds_ago + ' second' + (item.published_seconds_ago > 1 ? 's' : '') + ' ago'
+      }
+    }
   }
 }
 </script>
