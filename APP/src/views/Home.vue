@@ -39,7 +39,7 @@
               <mdb-tbl-body>
                 <tr v-for="(item, index) in pageItems" v-bind:key="index">
                   <td class="text-left">
-                    <a :href="'/post/' + item.post_id" class="font-weight-bold blue-text">{{ item.topic }}</a>
+                    <a v-on:click="redirect(item.post_id)" class="font-weight-bold blue-text">{{ item.topic }}</a>
                     <div>
                       <strong>{{ item.author }}</strong>
                       <span>{{ printDate(item) }}</span>
@@ -152,10 +152,10 @@ export default {
       })
         .then(res => {
           if (res.data.error === false) {
-            this.postFormSuccess = 'Successful'
             this.postFormError = ''
             this.topic = ''
             this.content = ''
+            this.$router.push('/post/' + res.data.body.post_id)
           }
         })
         .catch(err => {
@@ -177,6 +177,9 @@ export default {
       else if (item.published_seconds_ago !== 0) {
         return item.published_seconds_ago + ' second' + (item.published_seconds_ago > 1 ? 's' : '') + ' ago'
       }
+    },
+    redirect (post_id) {
+      this.$router.push('/post/' + post_id)
     }
   }
 }

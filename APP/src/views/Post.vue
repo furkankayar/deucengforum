@@ -38,20 +38,20 @@
 
 
               <div>
-                <form class="px-1 mt-4">
+                <div class="px-1 mt-4">
 
                 <!-- Comment -->
                 <div class="form-group">
                   <label for="replyFormComment">Your comment</label>
-                  <textarea class="form-control" id="replyFormComment" rows="5"></textarea>
+                  <textarea v-model="commentText" v-on:input="commentTyped" class="form-control" id="replyFormComment" rows="5" maxlength="350"></textarea>
+                  <small class="text-muted mb-2 text-right">{{ this.commentText.trim().length + '/350' }}</small>
                 </div>
-
                 <div class="text-center mt-4">
-                  <mdb-btn v-if="isAuthenticated" color="primary" size="md">Comment</mdb-btn>
-                  <mdb-btn color="secondary" size="md">Comment Anonymous</mdb-btn>
+                  <mdb-btn :disabled="this.disableButton || this.disableAll" v-on:click="commentAuthenticated()" v-if="isAuthenticated" color="primary" size="md">Comment</mdb-btn>
+                  <mdb-btn :disabled="this.disableButton || this.disableAll" v-on:click="commentAnonymous()" color="secondary" size="md">Comment Anonymous</mdb-btn>
                 </div>
 
-                </form>
+              </div>
 
               </div>
             </div>
@@ -96,6 +96,7 @@ export default {
   },
   data () {
     return {
+      post_id: '',
       isAuthenticated: false,
       user_id: '',
       username: '',
@@ -103,7 +104,11 @@ export default {
       date: {},
       positive_vote: '',
       negative_vote: '',
-      comments: []
+      comments: [],
+      commentText: '',
+      commentError: '',
+      disableButton: true,
+      disableAll: false
     }
   },
   mounted () {
@@ -112,6 +117,7 @@ export default {
     if (this.$route.params.data !== undefined || this.$route.params.data !== null) {
       data = this.$route.params.data
     }
+    this.post_id = id
     this.user_id = data.user_id ? data.user_id : ''
     this.username = data.username ? data.username : ''
     this.content = data.content ? data.content : ''
@@ -173,6 +179,41 @@ export default {
       else if (item.published_seconds_ago !== 0) {
         return item.published_seconds_ago + ' second' + (item.published_seconds_ago > 1 ? 's' : '') + ' ago'
       }
+    },
+    commentTyped () {
+
+      if (this.commentText.trim().length > 0 && this.commentText.trim().length <= 350) {
+        this.disableButton = false
+      }
+      else {
+        this.disableButton = true
+      }
+    },
+    commentAnonymous () {
+      this.disableAll = true
+      api.new_comment_anonymous({
+        comment: this.commentText.trim(),
+        postId: this.post_id
+      })
+        .then(res => {
+          if (res.data.error === false) {
+            this.$router.go(0)
+          }
+          else{
+            console.log('Error occured while comment being created')
+          }
+          this.disableButton = false
+          this.disableAll = false
+        })
+        .catch(err => {
+          if (err) {
+            console.log('Error occured while comment being created')
+          }
+          this.disableAll = false
+        })
+    },
+    commentAuthenticated () {
+      console.log(this.commentText)
     }
   }
 }

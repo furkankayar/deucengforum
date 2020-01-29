@@ -8,5 +8,6 @@ module.exports = (injectedDB, injectedRedisClient) => {
       userHelper: require("./userHelper")(injectedDB.UserModel, bcrypt),
       authHelper: require("./authHelper")(injectedDB.UserModel, bcrypt),
       postHelper: require("./postHelper")(injectedDB.PostModel, injectedDB.PostMenuView, injectedRedisClient, injectedDB.sequelize),
+      commentHelper: require("./commentHelper")(injectedDB.CommentModel),
   };
 };

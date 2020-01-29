@@ -51,10 +51,10 @@ function postMenuView(sequelize, Sequelize){
                                  "FROM ( SELECT posts.user_id,\n" +
                                  "  			      posts.post_id,\n" +
                                  "  	   		    posts.answer,\n" +
-                                 "  	   		    COUNT(*) AS view\n" +
+                                 "  	   		    SUM(CASE WHEN _view.user_id IS NULL THEN 0 ELSE 1 END) AS view\n" +
                                  "  	   FROM ( SELECT _post.user_id,\n" +
                                  "  			  		       _post.post_id, \n" +
-                                 "           	 		     COUNT(*) AS answer\n" +
+                                 "           	 		     SUM(CASE WHEN _comment.comment_id IS NULL THEN 0 ELSE 1 END) AS answer\n" +
                                  "  	   		    FROM _post\n" +
                                  "  	   		    INNER JOIN _user ON _user.user_id = _post.user_id\n" +
                                  "    	   		  LEFT JOIN _comment ON _post.post_id = _comment.post_id\n" +

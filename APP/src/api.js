@@ -47,5 +47,8 @@ export default {
   },
   get_comments_of_post (data) {
     return this.execute('post', '/post/get_comments_of_post', data)
+  },
+  new_comment_anonymous (data) {
+    return this.execute('post', '/comment/new_comment_anonymous', data)
   }
 }

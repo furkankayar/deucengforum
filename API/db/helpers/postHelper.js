@@ -48,7 +48,7 @@ function createNewPost(req, res){
     })
       .then(ans => {
         if(ans){
-          return utility.sendResponse(200, res, "post created", false);
+          return utility.sendResponse(200, res, { status: "success", post_id: ans.dataValues.post_id }, false);
         }
         return utility.sendResponse(500, res, "error", true);
       })
@@ -124,7 +124,6 @@ function getCommentsOfPost(req, res){
   )
     .then(result => {
       if(result){
-        console.log(result)
         return utility.sendResponse(200, res, result[0], false);
       }
       return utility.sendResponse(500 ,res, "error", true);
@@ -136,5 +135,4 @@ function getCommentsOfPost(req, res){
       }
       return utility.sendResponse(500, res, "error", true);
     });
-
 }
