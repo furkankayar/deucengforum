@@ -24,7 +24,8 @@ module.exports = (sequelize) => {
                           "\t\tFROM _comment\n" +
                           "\t\tLEFT JOIN _user_comment ON _comment.comment_id = _user_comment.comment_id\n" +
                           "\t\tLEFT JOIN _user ON _user_comment.user_id = _user.user_id\n" +
-                          "\t\tWHERE _comment.post_id = param_post_id;\n" +
+                          "\t\tWHERE _comment.post_id = param_post_id\n" +
+                          "\t\tORDER BY _comment.date ASC;" +
                           "END; $$\n" +
                           "LANGUAGE 'plpgsql';");
 }

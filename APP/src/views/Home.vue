@@ -30,6 +30,7 @@
               <mdb-tbl-head>
                 <tr>
                   <th class="text-left">Topic</th>
+                  <th class="text-center">Writer</th>
                   <th class="text-center">Views</th>
                   <th class="text-center">Answers</th>
                 </tr>
@@ -39,12 +40,13 @@
               <mdb-tbl-body>
                 <tr v-for="(item, index) in pageItems" v-bind:key="index">
                   <td class="text-left">
-                    <a v-on:click="redirect(item.post_id)" class="font-weight-bold blue-text">{{ item.topic }}</a>
+                    <a v-on:click="redirectPost(item.post_id)" class="font-weight-bold blue-text">{{ item.topic }}</a>
                     <div>
                       <strong>{{ item.author }}</strong>
                       <span>{{ printDate(item) }}</span>
                     </div>
                   </td>
+                  <td class="text-center">{{ item.username }}</td>
                   <td class="text-center">{{ item.view }}</td>
                   <td class="text-center">{{ item.answer }}</td>
                 </tr>
@@ -53,7 +55,7 @@
             </mdb-tbl>
           </div>
           <div class="card-footer pb-0 pt-3 text-center">
-            <jw-pagination :items="items" @changePage="onChangePage"></jw-pagination>
+            <jw-pagination :items="items" @changePage="onChangePage" :labels="labels"></jw-pagination>
         </div>
         </div>
       </div>
@@ -100,6 +102,10 @@ export default {
     return {
       items: [
       ],
+      labels: {
+        next: '>',
+        previous: '<',
+      },
       pageItems: [],
       content: '',
       topic: '',
@@ -174,12 +180,15 @@ export default {
       else if (item.published_minutes_ago !== 0) {
         return item.published_minutes_ago + ' minute' + (item.published_minutes_ago > 1 ? 's' : '') + ' ago'
       }
-      else if (item.published_seconds_ago !== 0) {
+      else {
         return item.published_seconds_ago + ' second' + (item.published_seconds_ago > 1 ? 's' : '') + ' ago'
       }
     },
-    redirect (post_id) {
+    redirectPost (post_id) {
       this.$router.push('/post/' + post_id)
+    },
+    redirectUser (user_id) {
+      this.$router.push('/user/' + user_id)
     }
   }
 }

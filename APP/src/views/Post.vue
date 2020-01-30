@@ -11,11 +11,11 @@
               {{ printDate(this.date) }}
             </p>
             <div>
-              <a href="#" type="button" class="btn btn-outline-dark-green btn-sm px-2 waves-effect show_login">
+              <a v-on:click="votePost('1')" type="button" class="btn btn-outline-dark-green btn-sm px-2 waves-effect show_login">
                 <span class="value">{{ this.positive_vote }}</span>
                 <i class="far fa-thumbs-up ml-1"></i>
               </a>
-              <a href="#" type="button" class="btn btn-outline-danger btn-sm px-2 waves-effect show_login">
+              <a v-on:click="votePost('-1')" type="button" class="btn btn-outline-danger btn-sm px-2 waves-effect show_login">
                 <span class="value">{{ this.negative_vote }}</span>
                 <i class="far fa-thumbs-down ml-1"></i>
               </a>
@@ -35,18 +35,25 @@
                 <p>{{ comment.content }}</p>
                 <hr>
               </small>
-
-
               <div>
                 <div class="px-1 mt-4">
 
                 <!-- Comment -->
                 <div class="form-group">
                   <label for="replyFormComment">Your comment</label>
-                  <textarea v-model="commentText" v-on:input="commentTyped" class="form-control" id="replyFormComment" rows="5" maxlength="350"></textarea>
-                  <small class="text-muted mb-2 text-right">{{ this.commentText.trim().length + '/350' }}</small>
+                  <textarea v-model="commentText"
+                            v-on:input="commentTyped"
+                            v-on:focusin="counterVisible = true"
+                            v-on:focusout="counterVisible = false "
+                            class="form-control"
+                            id="replyFormComment"
+                            rows="5"
+                            maxlength="350">
+                  </textarea>
+                  <small v-if="counterVisible" class="text-muted mb-2 float-right">{{ this.commentText.trim().length + '/350' }}</small>
+                  <br/>
                 </div>
-                <div class="text-center mt-4">
+                <div class="text-center">
                   <mdb-btn :disabled="this.disableButton || this.disableAll" v-on:click="commentAuthenticated()" v-if="isAuthenticated" color="primary" size="md">Comment</mdb-btn>
                   <mdb-btn :disabled="this.disableButton || this.disableAll" v-on:click="commentAnonymous()" color="secondary" size="md">Comment Anonymous</mdb-btn>
                 </div>
@@ -57,25 +64,6 @@
             </div>
           </div>
         </div>
-        <!--<section>
-          <mdb-card-header class="border-0 font-weight-bold d-flex justify-content-between">
-            <p class="mr-4 mb-0">About the author</p>
-            <ul class="list-unstyled list-inline mb-0">
-              <li class="list-inline-item"><a href="" class="mr-3"><mdb-icon icon="envelope" class="mr-1" />Send message</a></li>
-              <li class="list-inline-item"><a href="" class="mr-3"><mdb-icon icon="user" class="mr-1" />See profile</a></li>
-              <li class="list-inline-item"><a href="" class="mr-3"><mdb-icon icon="rss" class="mr-1" />Follow</a></li>
-            </ul>
-          </mdb-card-header>
-          <mdb-media class="mt-4 px-1">
-            <img class="card-img-100 d-flex z-depth-1 mr-3" src="https://mdbootstrap.com/img/Photos/Avatars/img%20(8).jpg" alt="Generic placeholder image">
-            <mdb-media-body>
-              <h5 class="font-weight-bold mt-0">
-                <a href="">Danny Newman</a>
-              </h5>
-              Lorem ipsum dolor sit amet, consectetur adipisicing elit. Quod consectetur accusamus velit nostrum et magnam.
-            </mdb-media-body>
-          </mdb-media>
-        </section>-->
       </div>
       <div class="col-md-2"/>
     </div>
@@ -108,7 +96,8 @@ export default {
       commentText: '',
       commentError: '',
       disableButton: true,
-      disableAll: false
+      disableAll: false,
+      counterVisible: false
     }
   },
   mounted () {
@@ -164,6 +153,19 @@ export default {
         }
       })
 
+    api.view_post({
+      postId: id
+    })
+      .then(res => {
+        if (res){
+          console.log('Post view confirmed')
+        }
+      })
+      .catch(err => {
+        if (err) {
+          console.log('Unauthorized')
+        }
+      })
   },
   methods: {
     printDate (item) {
@@ -176,7 +178,7 @@ export default {
       else if (item.published_minutes_ago !== 0) {
         return item.published_minutes_ago + ' minute' + (item.published_minutes_ago > 1 ? 's' : '') + ' ago'
       }
-      else if (item.published_seconds_ago !== 0) {
+      else {
         return item.published_seconds_ago + ' second' + (item.published_seconds_ago > 1 ? 's' : '') + ' ago'
       }
     },
@@ -202,7 +204,6 @@ export default {
           else{
             console.log('Error occured while comment being created')
           }
-          this.disableButton = false
           this.disableAll = false
         })
         .catch(err => {
@@ -213,7 +214,55 @@ export default {
         })
     },
     commentAuthenticated () {
-      console.log(this.commentText)
+      this.disableAll = true
+      api.new_comment_authenticated({
+        comment: this.commentText.trim(),
+        postId: this.post_id
+      })
+        .then(res => {
+          if (res.data.error === false) {
+            this.$router.go(0)
+          }
+          else{
+            console.log('Error occured while comment being created')
+          }
+          this.disableAll = false
+        })
+        .catch(err => {
+          if (err) {
+            console.log('Error occured while comment being created')
+          }
+          this.disableAll = false
+        })
+    },
+    votePost (value) {
+      api.vote_post({
+        vote: value,
+        postId: this.post_id
+      })
+        .then(res => {
+          if (res.data.error === false) {
+            api.get_post({
+              postId: this.post_id
+            })
+              .then(res => {
+                if (res.data.error === false) {
+                  this.positive_vote = res.data.body.positive_vote
+                  this.negative_vote = res.data.body.negative_vote
+                }
+              })
+              .catch(err => {
+                if (err) {
+                  console.log('Error')
+                }
+              })
+          }
+        })
+        .catch(err => {
+          if (err) {
+            this.$root.$emit('loginRequest')
+          }
+        })
     }
   }
 }

@@ -4,7 +4,7 @@ import VueCookie from 'vue-cookie'
 import axios from 'axios'
 import qs from 'qs'
 
-axios.defaults.baseURL = 'http://localhost:8000'
+axios.defaults.baseURL = 'http://192.168.1.32:8000'
 
 export default {
   async execute (method, resource, body) {
@@ -50,5 +50,14 @@ export default {
   },
   new_comment_anonymous (data) {
     return this.execute('post', '/comment/new_comment_anonymous', data)
+  },
+  new_comment_authenticated (data) {
+    return this.execute('post', '/comment/new_comment_authenticated', data)
+  },
+  view_post (data) {
+    return this.execute('post', '/post/view_post', data)
+  },
+  vote_post (data) {
+    return this.execute('post', '/post/vote_post', data)
   }
 }
