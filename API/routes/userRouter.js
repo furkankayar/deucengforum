@@ -6,6 +6,7 @@ module.exports = (expressRouter, userHelper) => {
   expressRouter.put('/register', userHelper.registerUser);
   expressRouter.post('/check_email', userHelper.checkEmailUniqueness);
   expressRouter.post('/check_username', userHelper.checkUsernameUniqueness);
+  expressRouter.post('/activate_user', userHelper.activateUser);
 
 
 /*  expressRouter.post('/:url', (req, res) => {

@@ -13,7 +13,7 @@
         </form>
       </mdb-modal-body>
       <mdb-modal-footer center>
-        <mdb-btn @click.native="checkPostForm" gradient="aqua">Send Post</mdb-btn>
+        <mdb-btn @click.native="checkPostForm" gradient="blue">Send Post</mdb-btn>
       </mdb-modal-footer>
     </mdb-modal>
     <div class="container-fluid">
@@ -22,14 +22,14 @@
       <div class="col-md-6">
         <div class="card-body">
           <div class="text-right">
-            <mdbBtn gradient="blue" icon="plus" size="sm" mdbWavesEffect @click.native="createNewTopic">New Topic</mdbBtn>
+            <mdbBtn gradient="blue" icon="plus" size="sm" mdbWavesEffect @click.native="createNewTopic">New Post</mdbBtn>
           </div>
           <div class="table-responsive">
             <mdb-tbl hover :pagination = "true">
               <!--Table head-->
               <mdb-tbl-head>
                 <tr>
-                  <th class="text-left">Topic</th>
+                  <th class="text-left">Post</th>
                   <th class="text-center">Writer</th>
                   <th class="text-center">Views</th>
                   <th class="text-center">Answers</th>

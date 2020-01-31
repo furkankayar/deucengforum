@@ -3,17 +3,24 @@
 const utility = require('../../utility');
 let userModel;
 let bcrypt;
+let nodemailer;
+let crypto;
+let redisClient;
 
-module.exports = (injectedUserModel, injectedBcrypt) => {
+module.exports = (injectedUserModel, injectedBcrypt, injectedNodemailer, injectedCrypto, injectedRedisClient) => {
 
   userModel = injectedUserModel;
   bcrypt = injectedBcrypt;
+  nodemailer = injectedNodemailer;
+  crypto = injectedCrypto;
+  redisClient = injectedRedisClient;
 
   return {
     getUserFromCredentials: getUserFromCredentials,
     registerUser: registerUser,
     checkEmailUniqueness: checkEmailUniqueness,
     checkUsernameUniqueness: checkUsernameUniqueness,
+    activateUser: activateUser
   };
 };
 
@@ -110,6 +117,102 @@ async function registerUser(req, res){
     return utility.sendResponse(500, res, "database error", true);
   }
 
-  return utility.sendResponse(201, res, "registration successful", false);
+  let token = crypto.randomBytes(50).toString('hex');
+  let store = JSON.stringify({
+    username: username,
+    email: email
+  });
 
+  redisClient.select(1, (err, resp) => {
+    redisClient.setex(token, 3600000, store);
+  });
+
+  const transporter = nodemailer.createTransport({
+    service: 'Gmail',
+    auth:{
+      user: 'dbms.info.test@gmail.com',
+      pass: '123123123Db'
+    },
+    tls: {
+      rejectUnauthorized: false
+    }
+  });
+
+  const mailOptions = {
+    from: 'dbms.info.test@gmail.com',
+    to: `${email}`,
+    subject: `Account activation`,
+    text: `Click link to activate your account: http://localhost:8080/validation/${token}\n`
+  }
+
+  try{
+    await transporter.sendMail(mailOptions, (err, resp) => {
+      if(err){
+        return utility.sendResponse(200, res, "email error", true);
+      }
+      else{
+        return utility.sendResponse(200, res, "success", false);
+      }
+    });
+  }
+  catch(err){
+    return utility.sendResponse(200, res, "email error", true);
+  }
+}
+
+function activateUser(req, res){
+
+  let token = req.body.token;
+
+  if(!utility.isString(token)){
+    return utility.sendResponse(400, res, "missing token", true);
+  }
+
+  redisClient.select(1, (err, resp) => {
+    if(err){
+      return utility.sendResponse(500, res, "error", true);
+    }
+    else{
+      redisClient.get(token, (err, session) => {
+        if(err){
+          return utility.sendResponse(500, res, "error", true);
+        }
+        else{
+          if(session === null){
+            return utility.sendResponse(500, res, "invalid token", true);
+          }
+          else{
+            let sessionObj = JSON.parse(session);
+            userModel.findOne({
+              where: {
+                username: sessionObj.username
+              }
+            })
+              .then(user => {
+                user.update({
+                  is_active: true
+                })
+                  .then(ans => {
+                    if(ans){
+                      redisClient.del(token, (err, result) =>{
+                        if(err){
+                          console.log('Error occured while token is deleted: ' + token);
+                        }
+                      });
+                      return utility.sendResponse(200 ,res, "success", false);
+                    }
+                    return utility.sendResponse(500, res, "error", true);
+                  })
+                  .catch(err => {
+                    return utility.sendResponse(500, res, "database error", true);
+                  })
+              })
+              .catch(err => {
+                return utility.sendResponse(500, res, "database error", true);
+              })
+          }
+        }
+      });
+    }
+  });
 }

@@ -59,5 +59,8 @@ export default {
   },
   vote_post (data) {
     return this.execute('post', '/post/vote_post', data)
+  },
+  activate_user (data) {
+    return this.execute('post', '/user/activate_user', data)
   }
 }

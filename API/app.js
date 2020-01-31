@@ -5,8 +5,10 @@ const bodyParser = require("body-parser");
 const redis = require("redis");
 const app = express();
 const db = require("./db/models/index");
+const crypto = require('crypto');
+const nodemailer = require('nodemailer');
 const redisClient = redis.createClient();
-const dbHelpers = require("./db/helpers/index")(db, redisClient);
+const dbHelpers = require("./db/helpers/index")(db, redisClient, nodemailer, crypto);
 
 
 

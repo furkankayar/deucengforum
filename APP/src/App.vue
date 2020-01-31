@@ -4,14 +4,14 @@
       id="main-navbar"
       dark
       position="top"
-      color="blue"
+      color="blue-gradient"
       style="z-index: 2050"
     >
       <mdb-navbar-brand to="/" waves class="font-weight-bold">DEUCENG</mdb-navbar-brand>
       <mdb-navbar-toggler>
-        <mdb-navbar-nav right>
+        <mdb-navbar-nav left>
           <mdb-nav-item exact to="/">
-            <strong>Home</strong>
+            <strong>Posts</strong>
           </mdb-nav-item>
           <mdb-nav-item v-if="loggedIn == false" @click.native="showRegisterModal = false; showLoginModal = true">
             <strong>Login</strong>
@@ -23,9 +23,24 @@
             <strong>Logout</strong>
           </mdb-nav-item>
         </mdb-navbar-nav>
+        <mdb-navbar-nav right>
+          <mdb-dropdown tag="li" class="nav-item">
+            <mdb-dropdown-toggle slot="toggle" tag="a" navLink waves-fixed>
+              <strong>
+                <img src="https://mdbootstrap.com/img/Photos/Avatars/avatar-2.jpg" class="rounded-circle z-depth-0 md-avatar" alt="avatar image"/>
+              </strong>
+            </mdb-dropdown-toggle>
+            <mdb-dropdown-menu mdb-dropdown-right>
+              <mdb-dropdown-item>Action</mdb-dropdown-item>
+              <mdb-dropdown-item>Another action</mdb-dropdown-item>
+              <mdb-dropdown-item>Something else here</mdb-dropdown-item>
+            </mdb-dropdown-menu>
+          </mdb-dropdown>
+        </mdb-navbar-nav>
+
       </mdb-navbar-toggler>
     </mdb-navbar>
-    <main :style="{marginTop: '60px'}">
+    <main :style="{marginTop: '80px'}">
       <mdb-modal centered :show="showLoginModal" @close="showLoginModal = false; loginFormError = ''">
         <mdb-modal-header class="text-center">
           <mdb-modal-title tag="h4" bold class="w-100">Sign in</mdb-modal-title>
@@ -62,12 +77,9 @@
         <router-view></router-view>
       </transition>
     </main>
-    <mdb-footer color="blue">
-      <p class="footer-copyright mb-0 py-3 text-center">
-        &copy; {{new Date().getFullYear()}} Copyright:
-        <a
-          href="https://mdbootstrap.com/docs/vue/?utm_source=DemoApp&utm_medium=MDBVue"
-        >MDBootstrap.com</a>
+    <mdb-footer color="blue-gradient">
+      <p class="footer-copyright mb-0 py-3 text-center"><strong>
+        &copy; {{new Date().getFullYear()}} FK</strong>
       </p>
     </mdb-footer>
   </div>
@@ -87,7 +99,11 @@ import {
   mdbModalBody,
   mdbModalFooter,
   mdbBtn,
-  mdbInput
+  mdbInput,
+  mdbDropdown,
+  mdbDropdownItem,
+  mdbDropdownMenu,
+  mdbDropdownToggle,
 } from "mdbvue"
 
 import api from "./api"
@@ -146,7 +162,11 @@ export default {
     mdbModalBody,
     mdbModalFooter,
     mdbBtn,
-    mdbInput
+    mdbInput,
+    mdbDropdown,
+    mdbDropdownItem,
+    mdbDropdownMenu,
+    mdbDropdownToggle,
   },
   methods: {
     checkLoginForm () {
@@ -321,5 +341,31 @@ export default {
 .fade-enter,
 .fade-leave-active {
   opacity: 0;
+}
+
+.md-avatar {
+  vertical-align: middle;
+  width: 50px;
+  height: 50px;
+}
+.md-avatar.size-1 {
+  width: 40px;
+  height: 40px;
+}
+.md-avatar.size-2 {
+  width: 70px;
+  height: 70px;
+}
+.md-avatar.size-3 {
+  width: 90px;
+  height: 90px;
+}
+.md-avatar.size-4 {
+  width: 110px;
+  height: 110px;
+}
+
+.navbar .dropdown-menu {
+  position: relative!important;
 }
 </style>

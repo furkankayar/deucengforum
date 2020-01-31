@@ -54,8 +54,8 @@
                   <br/>
                 </div>
                 <div class="text-center">
-                  <mdb-btn :disabled="this.disableButton || this.disableAll" v-on:click="commentAuthenticated()" v-if="isAuthenticated" color="primary" size="md">Comment</mdb-btn>
-                  <mdb-btn :disabled="this.disableButton || this.disableAll" v-on:click="commentAnonymous()" color="secondary" size="md">Comment Anonymous</mdb-btn>
+                  <mdb-btn :disabled="this.disableButton || this.disableAll" v-on:click="commentAuthenticated()" v-if="isAuthenticated" gradient="blue" size="md">Comment</mdb-btn>
+                  <mdb-btn :disabled="this.disableButton || this.disableAll" v-on:click="commentAnonymous()" gradient="purple" size="md">Comment Anonymous</mdb-btn>
                 </div>
 
               </div>
