@@ -5,7 +5,8 @@
       dark
       position="top"
       color="blue-gradient"
-      style="z-index: 2050"
+      style="z-index: 2050; min-height:75px;"
+
     >
       <mdb-navbar-brand to="/" waves class="font-weight-bold">DEUCENG</mdb-navbar-brand>
       <mdb-navbar-toggler>
@@ -19,20 +20,17 @@
           <mdb-nav-item v-if="loggedIn == false" @click.native="showLoginModal = false; showRegisterModal = true">
             <strong>Register</strong>
           </mdb-nav-item>
-          <mdb-nav-item v-if="loggedIn == true" @click.native="logout()">
-            <strong>Logout</strong>
-          </mdb-nav-item>
         </mdb-navbar-nav>
         <mdb-navbar-nav right>
-          <mdb-dropdown tag="li" class="nav-item">
+          <mdb-dropdown v-if="loggedIn == true" tag="li" class="nav-item">
             <mdb-dropdown-toggle slot="toggle" tag="a" navLink waves-fixed>
               <strong>
                 <img src="https://mdbootstrap.com/img/Photos/Avatars/avatar-2.jpg" class="rounded-circle z-depth-0 md-avatar" alt="avatar image"/>
               </strong>
             </mdb-dropdown-toggle>
             <mdb-dropdown-menu mdb-dropdown-right>
-              <mdb-dropdown-item>Action</mdb-dropdown-item>
-              <mdb-dropdown-item>Another action</mdb-dropdown-item>
+              <mdb-dropdown-item @click.native="logout()"><i class="fas fa-sign-out-alt"></i> Sign out</mdb-dropdown-item>
+              <mdb-dropdown-item @click.native="redirectUserPage()"><i class="fas fa-user"></i> Profile</mdb-dropdown-item>
               <mdb-dropdown-item>Something else here</mdb-dropdown-item>
             </mdb-dropdown-menu>
           </mdb-dropdown>
@@ -78,8 +76,8 @@
       </transition>
     </main>
     <mdb-footer color="blue-gradient">
-      <p class="footer-copyright mb-0 py-3 text-center"><strong>
-        &copy; {{new Date().getFullYear()}} FK</strong>
+      <p class="footer-copyright mb-0 py-3 text-center"><strong>FK
+        &copy; {{new Date().getFullYear()}}</strong>
       </p>
     </mdb-footer>
   </div>
@@ -275,7 +273,7 @@ export default {
     logout () {
       VueCookie.delete('access_token')
       this.$router.go(0)
-    }
+    },
   }
 };
 </script>
@@ -345,8 +343,8 @@ export default {
 
 .md-avatar {
   vertical-align: middle;
-  width: 50px;
-  height: 50px;
+  width: 40px;
+  height: 40px;
 }
 .md-avatar.size-1 {
   width: 40px;

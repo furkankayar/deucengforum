@@ -2,6 +2,7 @@ import Vue from 'vue'
 import Router from 'vue-router'
 import Home from './views/Home.vue'
 import Post from './views/Post.vue'
+import User from './views/User.vue'
 import Validation from './views/Validation.vue'
 import Api from './api'
 
@@ -39,6 +40,11 @@ export default new Router({
             }
           })
       }
+    },
+    {
+      path: '/user/:id',
+      name: 'user',
+      component: User
     },
     {
       path: '/validation/:token',

@@ -3,6 +3,9 @@
 const express = require("express");
 const bodyParser = require("body-parser");
 const redis = require("redis");
+const cookieParser = require('cookie-parser')
+const csurf = require('csurf')
+const csrfProtection = csurf({ cookie: true })
 const app = express();
 const db = require("./db/models/index");
 const crypto = require('crypto');
@@ -25,12 +28,11 @@ app.use(bodyParser.urlencoded({
   extended: false
 }));
 
+
+
 app.use(bodyParser.json());
-
 const router = require("./routes/index")(app, express.Router(), dbHelpers);
-
 app.use(app.oauth.errorHandler());
-
 
 
 
