@@ -25,13 +25,12 @@
           <mdb-dropdown v-if="loggedIn == true" tag="li" class="nav-item">
             <mdb-dropdown-toggle slot="toggle" tag="a" navLink waves-fixed>
               <strong>
-                <img src="https://mdbootstrap.com/img/Photos/Avatars/avatar-2.jpg" class="rounded-circle z-depth-0 md-avatar" alt="avatar image"/>
+                <img :src="this.profileImageSrc" class="rounded-circle z-depth-1 md-avatar"/>
               </strong>
             </mdb-dropdown-toggle>
             <mdb-dropdown-menu mdb-dropdown-right>
+              <mdb-dropdown-item @click.native="redirectProfile()"><i class="fas fa-user"></i> Profile</mdb-dropdown-item>
               <mdb-dropdown-item @click.native="logout()"><i class="fas fa-sign-out-alt"></i> Sign out</mdb-dropdown-item>
-              <mdb-dropdown-item @click.native="redirectUserPage()"><i class="fas fa-user"></i> Profile</mdb-dropdown-item>
-              <mdb-dropdown-item>Something else here</mdb-dropdown-item>
             </mdb-dropdown-menu>
           </mdb-dropdown>
         </mdb-navbar-nav>
@@ -120,6 +119,7 @@ export default {
       registrationFormError: '',
       registrationFormSuccess: '',
       loginFormError: '',
+      profileImageSrc: '',
       re: /^[a-zA-Z0-9]+([a-zA-Z0-9](_|-| )[a-zA-Z0-9])*[a-zA-Z0-9]*$/,
       mailRe: /^\S+\.\S+@ceng.deu.edu.tr\b$/,
       passRe: /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d$@$!%*#?&]{6,50}$/,
@@ -136,6 +136,13 @@ export default {
       .then(res => {
         if (res.data.error === false){
           this.loggedIn = true
+          api.get_profile_image({
+          })
+            .then(res => {
+              if(res.data.error === false){
+                this.profileImageSrc = res.data.body
+              }
+            })
         }
         else {
           this.loggedIn = false
@@ -269,6 +276,9 @@ export default {
             this.registrationFormError = 'Registration failed!'
           }
         })
+    },
+    redirectProfile () {
+      this.$router.push('/profile')
     },
     logout () {
       VueCookie.delete('access_token')

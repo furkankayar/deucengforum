@@ -32,6 +32,11 @@ var PostMenuView = postMenu.PostMenuView(sequelize,Sequelize);
 
 require('../functions/getPost')(sequelize);
 require('../functions/getCommentsOfPost')(sequelize);
+require('../functions/getTopPostsOfUser')(sequelize);
+require('../functions/getLastActivityOfUser')(sequelize);
+require('../functions/getLikesOfUser')(sequelize);
+require('../functions/getTotalViewOfUser')(sequelize);
+
 
 const db = {};
 

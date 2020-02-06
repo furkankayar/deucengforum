@@ -109,7 +109,6 @@ function getPost(req, res){
     })
     .catch(err => {
       if(err){
-        console.log(err);
         return utility.sendResponse(500, res, "database error", true);
       }
       return utility.sendResponse(500, res, "error", true);
@@ -137,7 +136,6 @@ function getCommentsOfPost(req, res){
     })
     .catch(err => {
       if(err){
-        console.log(err);
         return utility.sendResponse(500, res, "database error", true);
       }
       return utility.sendResponse(500, res, "error", true);

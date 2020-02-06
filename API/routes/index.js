@@ -12,7 +12,7 @@ const cors = require("cors");
 module.exports = (expressApp, expressRouter, dbHelpers)=>{
 
   let authRouter = require('./authRouter')(expressRouter, expressApp, dbHelpers.authHelper);
-  let userRouter = require('./userRouter')(expressRouter, dbHelpers.userHelper);
+  let userRouter = require('./userRouter')(expressRouter, expressApp, dbHelpers.userHelper);
   let postRouter = require('./postRouter')(expressRouter, expressApp, dbHelpers.postHelper);
   let commentRouter = require('./commentRouter')(expressRouter, expressApp, dbHelpers.commentHelper);
   expressApp.use("/authentication", cors(), authRouter);

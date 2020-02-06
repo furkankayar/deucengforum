@@ -5,6 +5,7 @@ module.exports = (sequelize) => {
   return sequelize.query("CREATE OR REPLACE FUNCTION get_post(param_post_id INTEGER)\n"+
                           "\tRETURNS TABLE(\n"+
                           "\t\tuser_id INTEGER,\n"+
+                          "\t\tprofile_image VARCHAR,\n" +
                           "\t\tusername VARCHAR,\n"+
                           "\t\tcontent VARCHAR,\n"+
                           "\t\tpublished_days_ago DOUBLE PRECISION,\n"+
@@ -18,6 +19,7 @@ module.exports = (sequelize) => {
                           "BEGIN\n"+
                           "\tRETURN QUERY\n"+
                           "\t\tSELECT _user.user_id,\n"+
+                          "\t\t \t\t   _user.profile_image,\n" +
                           "\t   \t\t   _user.username,\n"+
                           "\t   \t\t   _post.content,\n"+
                           "\t   \t\t   EXTRACT(DAY FROM NOW() - _post.date) AS published_days_ago,\n"+

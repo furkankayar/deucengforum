@@ -6,21 +6,26 @@ let bcrypt;
 let nodemailer;
 let crypto;
 let redisClient;
+let sequelize;
 
-module.exports = (injectedUserModel, injectedBcrypt, injectedNodemailer, injectedCrypto, injectedRedisClient) => {
+module.exports = (injectedUserModel, injectedBcrypt, injectedNodemailer, injectedCrypto, injectedRedisClient, injectedSequelize) => {
 
   userModel = injectedUserModel;
   bcrypt = injectedBcrypt;
   nodemailer = injectedNodemailer;
   crypto = injectedCrypto;
   redisClient = injectedRedisClient;
+  sequelize = injectedSequelize;
 
   return {
     getUserFromCredentials: getUserFromCredentials,
     registerUser: registerUser,
     checkEmailUniqueness: checkEmailUniqueness,
     checkUsernameUniqueness: checkUsernameUniqueness,
-    activateUser: activateUser
+    activateUser: activateUser,
+    getUserPage: getUserPage,
+    uploadProfileImage: uploadProfileImage,
+    getProfileImage: getProfileImage,
   };
 };
 
@@ -214,5 +219,144 @@ function activateUser(req, res){
         }
       });
     }
+  });
+}
+
+async function getUserPage(req, res){
+
+  let userId = req.body.userId;
+
+  if(!utility.isString(userId) || isNaN(userId)){
+    return utility.sendResponse(400, res, "missing or invalid user id", true);
+  }
+
+  try{
+    let user = await userModel.findOne({
+      where:{
+        user_id: userId
+      }
+    });
+
+    if(user === undefined || user === null){
+      return utility.sendResponse(404, res, "user not found", true);
+    }
+
+    let last_activity = await sequelize.query('SELECT * FROM get_last_activity_of_user(:user_id)',
+      {
+        plain: true,
+        replacements: { user_id: userId }
+      }
+    );
+
+    let likes = await sequelize.query('SELECT * FROM get_likes_of_user(:user_id)',
+      {
+        plain: true,
+        replacements: { user_id: userId }
+      }
+    );
+
+    let topPosts = await sequelize.query('SELECT * FROM get_top_posts_of_user(:user_id)',
+      {
+        replacements: { user_id: userId }
+      }
+    );
+
+    if(topPosts !== null && topPosts !== undefined){
+      topPosts = topPosts[0];
+    }
+
+    let totalView = await sequelize.query('SELECT * FROM get_total_view_of_user(:user_id)',
+      {
+        plain: true,
+        replacements: { user_id: userId }
+      }
+    );
+
+
+    return utility.sendResponse(200, res, {
+      username: user.username,
+      profile_image: user.profile_image,
+      last_activity: last_activity,
+      likes: likes,
+      total_view: totalView,
+      top_posts: topPosts
+    }, false);
+  }
+  catch(err){
+
+    return utility.sendResponse(500, res, "database error", true);
+  }
+}
+
+function uploadProfileImage(req, res){
+
+  let token = req.headers.authorization;
+
+  if(!utility.isString(token)){
+    return utility.sendResponse(200, res, "token required", true);
+  }
+
+
+
+  if(req.file === null || req.file === undefined){
+    return utility.sendResponse(200, res, "error occured while storing image", true);
+  }
+
+  redisClient.get(token.substr(7), (err, rawResponse) => {
+
+    if(err || rawResponse === null){
+      return utility.sendResponse(500, res, "session error", true);
+    }
+
+    let response = JSON.parse(rawResponse);
+    let user_id = response.user_id;
+
+    userModel.findOne({
+      where: user_id
+    })
+      .then(user => {
+        user.update({
+          profile_image: 'http://localhost:8000/uploads/' + req.file.filename
+        })
+        .then(ans => {
+          return utility.sendResponse(200, res, "profile image updated", false);
+        })
+        .catch(err => {
+          return utility.sendResponse(500, res, "database error", true);
+        });
+      })
+      .catch(err => {
+        return utilitu.sendResponse(500, res, "database error", true);
+      });
+  });
+}
+
+function getProfileImage(req, res){
+
+  let token = req.headers.authorization;
+
+  if(!utility.isString(token)){
+    return utility.sendResponse(200, res, "token required", true);
+  }
+
+  redisClient.get(token.substr(7), (err, rawResponse) => {
+
+    if(err || rawResponse === null){
+      return utility.sendResponse(500, res, "session error", true);
+    }
+
+    let response = JSON.parse(rawResponse);
+    let user_id = response.user_id;
+
+    userModel.findOne({
+      where: user_id,
+      raw: true
+    })
+      .then(user => {
+        return utility.sendResponse(200, res, user.profile_image, false);
+      })
+      .catch(err => {
+        return utility.sendResponse(500, res, "database error", true);
+      })
   });
 }

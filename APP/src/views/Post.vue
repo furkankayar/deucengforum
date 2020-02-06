@@ -6,7 +6,7 @@
         <div class="question-card card mb-4">
           <div class="card-header forum-card-img-30 d-flex justify-content-between">
             <p class="pt-2 mb-0">
-              <img src="https://secure.gravatar.com/avatar/62c9c125499e280d7f96a75e939f3046?s=96&amp;d=mm&amp;r=g" alt="" class="rounded-circle mr-2">
+              <img :src="this.user_profile_image" alt="" class="mr-4 z-depth-2 profile_image">
               <strong><a :href="this.user_id !== '' ? '/user/' + this.user_id : '#'">{{ this.username }}</a></strong>
               {{ printDate(this.date) }}
             </p>
@@ -87,6 +87,7 @@ export default {
       post_id: '',
       isAuthenticated: false,
       user_id: '',
+      user_profile_image: '',
       username: '',
       content: '',
       date: {},
@@ -108,6 +109,7 @@ export default {
     }
     this.post_id = id
     this.user_id = data.user_id ? data.user_id : ''
+    this.user_profile_image = data.profile_image ? data.profile_image : ''
     this.username = data.username ? data.username : ''
     this.content = data.content ? data.content : ''
     this.date.published_days_ago = data.published_days_ago ? data.published_days_ago : 0
@@ -267,3 +269,12 @@ export default {
   }
 }
 </script>
+
+<style>
+.profile_image {
+  vertical-align: middle;
+  border-radius: 50%;
+  width: 100px;
+  height: 100px;
+}
+</style>

@@ -62,5 +62,19 @@ export default {
   },
   activate_user (data) {
     return this.execute('post', '/user/activate_user', data)
+  },
+  get_user_page (data) {
+    return this.execute('post', '/user/get_user_page', data)
+  },
+  get_profile_image (data) {
+    return this.execute('post', '/user/get_profile_image', data)
+  },
+  upload_profile_image (data) {
+    return axios.post('/user/upload_profile_image', data, {
+      headers: {
+        'Content-Type': `multipart/form-data; boundary=${data._boundary}`,
+        'Authorization': `Bearer ${VueCookie.get('access_token')}`
+      }
+    })
   }
 }

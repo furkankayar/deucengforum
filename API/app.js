@@ -3,16 +3,15 @@
 const express = require("express");
 const bodyParser = require("body-parser");
 const redis = require("redis");
-const cookieParser = require('cookie-parser')
-const csurf = require('csurf')
+const cookieParser = require("cookie-parser")
+const csurf = require("csurf")
 const csrfProtection = csurf({ cookie: true })
 const app = express();
 const db = require("./db/models/index");
-const crypto = require('crypto');
-const nodemailer = require('nodemailer');
+const crypto = require("crypto");
+const nodemailer = require("nodemailer");
 const redisClient = redis.createClient();
 const dbHelpers = require("./db/helpers/index")(db, redisClient, nodemailer, crypto);
-
 
 
 const oAuth2Server = require('node-oauth2-server');
@@ -29,11 +28,10 @@ app.use(bodyParser.urlencoded({
 }));
 
 
-
 app.use(bodyParser.json());
 const router = require("./routes/index")(app, express.Router(), dbHelpers);
 app.use(app.oauth.errorHandler());
-
+app.use('/uploads', express.static('uploads'));
 
 
 redisClient.on('connect', () => {

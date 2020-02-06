@@ -24,6 +24,10 @@ function userModel(sequelize, Sequelize){
       type: Sequelize.STRING(100),
       allowNull: false,
     },
+    profile_image: {
+      type: Sequelize.STRING(255),
+      defaultValue: 'http://localhost:8000/uploads/default.png'
+    },
     is_active: {
       type: Sequelize.BOOLEAN,
       defaultValue: false
